@@ -34,7 +34,7 @@ function RarityBadge({ rarity }) {
   )
 }
 
-function CardItem({ card, dimmed }) {
+function CardItem({ card, dimmed, showReverse }) {
   const isOwned = card.regular > 0 || card.reverse > 0
   const hasReverse = HAS_REVERSE.has(card.rarity)
 
@@ -52,17 +52,19 @@ function CardItem({ card, dimmed }) {
       <div className="card-info">
         <div className="card-meta">
           <span className="card-number">#{String(card.number).padStart(3, '0')}</span>
+          <span className="card-name">{card.name}</span>
           <RarityBadge rarity={card.rarity} />
         </div>
-        <div className="card-name">{card.name}</div>
         <div className="card-footer">
           <div className="card-counts">
-            <span className={`count regular${card.regular > 0 ? ' has' : ''}`}>
-              {card.regular}×
-            </span>
+            {!showReverse && (
+              <span className={`count regular${card.regular > 0 ? ' has' : ''}`} title="Regular copies">
+                {card.regular}
+              </span>
+            )}
             {hasReverse && (
-              <span className={`count reverse${card.reverse > 0 ? ' has' : ''}`}>
-                {card.reverse}× R
+              <span className={`count reverse${card.reverse > 0 ? ' has' : ''}`} title="Reverse holo copies">
+                {card.reverse}
               </span>
             )}
           </div>
@@ -165,8 +167,14 @@ export default function App() {
           <input ref={fileRef} type="file" accept=".csv" onChange={handleFile} style={{ display: 'none' }} />
         </div>
 
-        <div className="progress-bar-wrap">
-          <div className="progress-bar" style={{ width: `${completion}%` }} />
+        <div className="progress-summary" aria-label={`${completion}% collection complete`}>
+          <div>
+            <span className="progress-kicker">Collection progress</span>
+            <span className="progress-percent">{completion}%</span>
+          </div>
+          <div className="progress-bar-wrap">
+            <div className="progress-bar" style={{ width: `${completion}%` }} />
+          </div>
         </div>
 
         <div className="stats-row">
@@ -254,7 +262,7 @@ export default function App() {
 
       <main className="card-grid">
         {filtered.map(card => (
-          <CardItem key={card.number} card={card} dimmed={filterReverse && card.reverse === 0} />
+          <CardItem key={card.number} card={card} dimmed={filterReverse && card.reverse === 0} showReverse={filterReverse} />
         ))}
       </main>
     </div>

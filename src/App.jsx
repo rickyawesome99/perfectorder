@@ -158,7 +158,7 @@ export default function App() {
         <div className="header-top">
           <div>
             <h1>Perfect Order</h1>
-            <p className="set-subtitle">Pokémon TCG · {cards.length} cards</p>
+            <p className="set-subtitle">Master Set · {cards.length} cards</p>
           </div>
           <button className="upload-btn" onClick={() => fileRef.current.click()}>
             <UploadIcon />

@@ -474,22 +474,41 @@ h1 {
   }
 
   .card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     padding: 14px 14px 32px;
   }
 
   .stats-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .stats-row::-webkit-scrollbar {
+    display: none;
   }
 
   .stat-card {
-    padding: 8px 12px;
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    min-width: 0;
   }
 
   .stat-value {
-    font-size: 16px;
+    font-size: 14px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .stat-sub {
+    font-size: 9px;
   }
 
   .card-info {

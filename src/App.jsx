@@ -34,12 +34,12 @@ function RarityBadge({ rarity }) {
   )
 }
 
-function CardItem({ card }) {
+function CardItem({ card, dimmed }) {
   const isOwned = card.regular > 0 || card.reverse > 0
   const hasReverse = HAS_REVERSE.has(card.rarity)
 
   return (
-    <div className={`card-item${isOwned ? '' : ' unowned'}`}>
+    <div className={`card-item${!isOwned || dimmed ? ' unowned' : ''}`}>
       <div className="card-img-wrap">
         <img
           src={`${IMAGE_BASE}/${IMAGE_CODE}_${card.number}.png`}
@@ -90,7 +90,19 @@ export default function App() {
   const [cards, setCards] = useState(initialCards)
   const [filterRarity, setFilterRarity] = useState('all')
   const [filterOwned, setFilterOwned] = useState('all')
+  const [sortBy, setSortBy] = useState('number')
+  const [sortDir, setSortDir] = useState('asc')
+  const [filterReverse, setFilterReverse] = useState(false)
   const fileRef = useRef(null)
+
+  const handleSort = (key) => {
+    if (sortBy === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(key)
+      setSortDir(key === 'number' ? 'asc' : 'desc')
+    }
+  }
 
   const handleFile = (e) => {
     const file = e.target.files[0]
@@ -106,13 +118,32 @@ export default function App() {
     [cards]
   )
 
-  const filtered = useMemo(() => cards.filter(c => {
-    if (filterRarity !== 'all' && c.rarity !== filterRarity) return false
-    const owned = c.regular > 0 || c.reverse > 0
-    if (filterOwned === 'owned' && !owned) return false
-    if (filterOwned === 'missing' && owned) return false
-    return true
-  }), [cards, filterRarity, filterOwned])
+  const filtered = useMemo(() => {
+    const list = cards.filter(c => {
+      if (filterRarity !== 'all' && c.rarity !== filterRarity) return false
+      if (filterReverse) {
+        if (!HAS_REVERSE.has(c.rarity)) return false
+        if (filterOwned === 'owned' && c.reverse === 0) return false
+        if (filterOwned === 'missing' && c.reverse > 0) return false
+      } else {
+        const owned = c.regular > 0 || c.reverse > 0
+        if (filterOwned === 'owned' && !owned) return false
+        if (filterOwned === 'missing' && owned) return false
+      }
+      return true
+    })
+
+    list.sort((a, b) => {
+      let diff = 0
+      if (sortBy === 'number')   diff = a.number - b.number
+      if (sortBy === 'price')    diff = a.price - b.price
+      if (sortBy === 'quantity') diff = (a.regular + a.reverse) - (b.regular + b.reverse)
+      if (sortBy === 'value')    diff = (a.regular + a.reverse) * a.price - (b.regular + b.reverse) * b.price
+      return sortDir === 'asc' ? diff : -diff
+    })
+
+    return list
+  }, [cards, filterRarity, filterOwned, filterReverse, sortBy, sortDir])
 
   const ownedCount = useMemo(() => cards.filter(c => c.regular > 0 || c.reverse > 0).length, [cards])
   const totalCopies = useMemo(() => cards.reduce((s, c) => s + c.regular + c.reverse, 0), [cards])
@@ -139,10 +170,11 @@ export default function App() {
         </div>
 
         <div className="stats-row">
-          <StatCard label="Unique Owned" value={`${ownedCount} / ${cards.length}`} sub={`${completion}% complete`} />
-          <StatCard label="Total Copies" value={totalCopies} />
-          <StatCard label="Collection Value" value={`$${totalValue.toFixed(2)}`} />
+          <StatCard label="Total" value={totalCopies} />
+          <StatCard label="Owned" value={`${ownedCount} / ${cards.length}`} sub={`${completion}% complete`} />
           <StatCard label="Missing" value={cards.length - ownedCount} />
+          <StatCard label="Value" value={`$${totalValue.toFixed(2)}`} />
+          <StatCard label="Packs" value={(totalCopies / 10).toFixed(1)} />
         </div>
       </header>
 
@@ -187,11 +219,43 @@ export default function App() {
           ))}
         </div>
 
+        <div className="filter-group">
+          <button
+            className={`filter-btn${filterReverse ? ' active' : ''}`}
+            onClick={() => setFilterReverse(r => !r)}
+          >
+            Reverse
+          </button>
+        </div>
+
+        <div className="filter-group sort-group">
+          <span className="filter-label">Sort</span>
+          {[
+            { key: 'number',   label: '#' },
+            { key: 'price',    label: 'Price' },
+            { key: 'quantity', label: 'Qty' },
+            { key: 'value',    label: 'Value' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              className={`filter-btn${sortBy === key ? ' active' : ''}`}
+              onClick={() => handleSort(key)}
+            >
+              {label}
+              {sortBy === key && (
+                <span className="sort-arrow">{sortDir === 'asc' ? ' ↑' : ' ↓'}</span>
+              )}
+            </button>
+          ))}
+        </div>
+
         <span className="filter-count">{filtered.length} cards</span>
       </div>
 
       <main className="card-grid">
-        {filtered.map(card => <CardItem key={card.number} card={card} />)}
+        {filtered.map(card => (
+          <CardItem key={card.number} card={card} dimmed={filterReverse && card.reverse === 0} />
+        ))}
       </main>
     </div>
   )

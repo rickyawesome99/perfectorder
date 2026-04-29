@@ -68,7 +68,7 @@ h1 {
 .upload-btn:hover {
   background: #252840;
   color: #e2e8f0;
-  border-color: #3d4270;
+  border-color: #4a6b0a;
 }
 
 /* ── Progress bar ────────────────────────────────────── */
@@ -83,7 +83,7 @@ h1 {
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  background: linear-gradient(90deg, #88BF14, #b0e832);
   border-radius: 2px;
   transition: width 0.4s ease;
 }
@@ -99,13 +99,13 @@ h1 {
 .stat-card {
   background: #1a1d2e;
   border: 1px solid #252840;
-  border-radius: 10px;
-  padding: 10px 16px;
-  min-width: 120px;
+  border-radius: 8px;
+  padding: 7px 12px;
+  min-width: 80px;
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
   color: #f1f5f9;
   line-height: 1;
@@ -113,7 +113,7 @@ h1 {
 }
 
 .stat-label {
-  font-size: 11px;
+  font-size: 10px;
   color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.6px;
@@ -121,7 +121,7 @@ h1 {
 
 .stat-sub {
   font-size: 11px;
-  color: #6366f1;
+  color: #88BF14;
   margin-top: 2px;
 }
 
@@ -164,7 +164,25 @@ h1 {
 .filter-btn.active {
   background: #1a1d2e;
   color: #e2e8f0;
-  border-color: #4f5b9e;
+  border-color: #5a8010;
+}
+
+.sort-group {
+  border-left: 1px solid #1a1d2e;
+  padding-left: 14px;
+}
+
+.filter-label {
+  font-size: 11px;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  align-self: center;
+  padding-right: 2px;
+}
+
+.sort-arrow {
+  opacity: 0.75;
 }
 
 .filter-count {
@@ -195,7 +213,7 @@ h1 {
 
 .card-item:hover {
   transform: translateY(-3px);
-  border-color: #3d4270;
+  border-color: #4a6b0a;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 

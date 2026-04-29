@@ -51,8 +51,8 @@ function CardItem({ card, dimmed, showReverse }) {
       </div>
       <div className="card-info">
         <div className="card-meta">
-          <span className="card-number">#{String(card.number).padStart(3, '0')}</span>
           <span className="card-name">{card.name}</span>
+          <span className="card-number">#{String(card.number).padStart(3, '0')}</span>
           <RarityBadge rarity={card.rarity} />
         </div>
         <div className="card-footer">
@@ -150,6 +150,7 @@ export default function App() {
   const ownedCount = useMemo(() => cards.filter(c => c.regular > 0 || c.reverse > 0).length, [cards])
   const totalCopies = useMemo(() => cards.reduce((s, c) => s + c.regular + c.reverse, 0), [cards])
   const totalValue = useMemo(() => cards.reduce((s, c) => s + c.value, 0), [cards])
+  const missingValue = useMemo(() => cards.filter(c => c.regular === 0).reduce((s, c) => s + c.price, 0), [cards])
   const completion = Math.round((ownedCount / cards.length) * 100)
 
   return (
@@ -179,85 +180,90 @@ export default function App() {
 
         <div className="stats-row">
           <StatCard label="Total" value={totalCopies} />
-          <StatCard label="Owned" value={`${ownedCount} / ${cards.length}`} sub={`${completion}% complete`} />
+          <StatCard label="Owned" value={`${ownedCount} / ${cards.length}`} />
           <StatCard label="Missing" value={cards.length - ownedCount} />
           <StatCard label="Value" value={`$${totalValue.toFixed(2)}`} />
+          <StatCard label="Missing Value" value={`$${missingValue.toFixed(2)}`} />
           <StatCard label="Packs" value={(totalCopies / 10).toFixed(1)} />
         </div>
       </header>
 
       <div className="filters-bar">
-        <div className="filter-group">
-          <button
-            className={`filter-btn${filterRarity === 'all' ? ' active' : ''}`}
-            onClick={() => setFilterRarity('all')}
-          >
-            All
-          </button>
-          {rarities.map(r => {
-            const color = RARITY_CONFIG[r]?.color
-            const isActive = filterRarity === r
-            return (
+        <div className="filter-row">
+          <div className="filter-group">
+            <button
+              className={`filter-btn${filterRarity === 'all' ? ' active' : ''}`}
+              onClick={() => setFilterRarity('all')}
+            >
+              All
+            </button>
+            {rarities.map(r => {
+              const color = RARITY_CONFIG[r]?.color
+              const isActive = filterRarity === r
+              return (
+                <button
+                  key={r}
+                  className={`filter-btn${isActive ? ' active' : ''}`}
+                  style={isActive && color ? { borderColor: color, color } : {}}
+                  onClick={() => setFilterRarity(r)}
+                  title={RARITY_CONFIG[r]?.label}
+                >
+                  {r}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="filter-row">
+          <div className="filter-group">
+            {[
+              { key: 'all', label: 'All' },
+              { key: 'owned', label: 'Owned' },
+              { key: 'missing', label: 'Missing' },
+            ].map(({ key, label }) => (
               <button
-                key={r}
-                className={`filter-btn${isActive ? ' active' : ''}`}
-                style={isActive && color ? { borderColor: color, color } : {}}
-                onClick={() => setFilterRarity(r)}
-                title={RARITY_CONFIG[r]?.label}
+                key={key}
+                className={`filter-btn${filterOwned === key ? ' active' : ''}`}
+                onClick={() => setFilterOwned(key)}
               >
-                {r}
+                {label}
               </button>
-            )
-          })}
-        </div>
+            ))}
+          </div>
 
-        <div className="filter-group">
-          {[
-            { key: 'all', label: 'All' },
-            { key: 'owned', label: 'Owned' },
-            { key: 'missing', label: 'Missing' },
-          ].map(({ key, label }) => (
+          <div className="filter-group">
             <button
-              key={key}
-              className={`filter-btn${filterOwned === key ? ' active' : ''}`}
-              onClick={() => setFilterOwned(key)}
+              className={`filter-btn${filterReverse ? ' active' : ''}`}
+              onClick={() => setFilterReverse(r => !r)}
             >
-              {label}
+              Reverse
             </button>
-          ))}
-        </div>
+          </div>
 
-        <div className="filter-group">
-          <button
-            className={`filter-btn${filterReverse ? ' active' : ''}`}
-            onClick={() => setFilterReverse(r => !r)}
-          >
-            Reverse
-          </button>
-        </div>
+          <div className="filter-group sort-group">
+            <span className="filter-label">Sort</span>
+            {[
+              { key: 'number',   label: '#' },
+              { key: 'price',    label: 'Price' },
+              { key: 'quantity', label: 'Qty' },
+              { key: 'value',    label: 'Value' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                className={`filter-btn${sortBy === key ? ' active' : ''}`}
+                onClick={() => handleSort(key)}
+              >
+                {label}
+                {sortBy === key && (
+                  <span className="sort-arrow">{sortDir === 'asc' ? ' ↑' : ' ↓'}</span>
+                )}
+              </button>
+            ))}
+          </div>
 
-        <div className="filter-group sort-group">
-          <span className="filter-label">Sort</span>
-          {[
-            { key: 'number',   label: '#' },
-            { key: 'price',    label: 'Price' },
-            { key: 'quantity', label: 'Qty' },
-            { key: 'value',    label: 'Value' },
-          ].map(({ key, label }) => (
-            <button
-              key={key}
-              className={`filter-btn${sortBy === key ? ' active' : ''}`}
-              onClick={() => handleSort(key)}
-            >
-              {label}
-              {sortBy === key && (
-                <span className="sort-arrow">{sortDir === 'asc' ? ' ↑' : ' ↓'}</span>
-              )}
-            </button>
-          ))}
+          <span className="filter-count">{filtered.length} cards</span>
         </div>
-
-        <span className="filter-count">{filtered.length} cards</span>
       </div>
 
       <main className="card-grid">

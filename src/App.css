@@ -20,7 +20,7 @@
   background: rgba(14, 15, 28, 0.92);
   border-bottom: 1px solid rgba(42, 48, 74, 0.9);
   box-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
-  padding: 24px clamp(18px, 4vw, 34px) 20px;
+  padding: 16px clamp(18px, 4vw, 34px) 14px;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -79,29 +79,30 @@ h1 {
 /* ── Progress bar ────────────────────────────────────── */
 
 .progress-summary {
-  display: grid;
-  grid-template-columns: minmax(130px, 180px) 1fr;
+  display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .progress-summary > div:first-child {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .progress-kicker {
-  font-size: 11px;
+  font-size: 10px;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
 
 .progress-percent {
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1;
   color: #e7f8c9;
   font-variant-numeric: tabular-nums;
@@ -109,6 +110,7 @@ h1 {
 
 .progress-bar-wrap {
   height: 8px;
+  flex: 1;
   background: #1a1d2e;
   border: 1px solid #252840;
   border-radius: 999px;
@@ -125,17 +127,18 @@ h1 {
 /* ── Stats ───────────────────────────────────────────── */
 
 .stats-row {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  display: flex;
+  justify-content: flex-start;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .stat-card {
   background: rgba(26, 29, 46, 0.82);
   border: 1px solid rgba(54, 61, 91, 0.9);
   border-radius: 8px;
-  padding: 10px 12px;
-  min-width: 0;
+  padding: 10px 16px;
+  min-width: 80px;
 }
 
 .stat-value {
@@ -164,8 +167,8 @@ h1 {
 .filters-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px clamp(18px, 4vw, 34px);
+  gap: 8px;
+  padding: 10px clamp(18px, 4vw, 34px);
   border-bottom: 1px solid #1a1d2e;
   background: rgba(10, 11, 20, 0.94);
   flex-wrap: wrap;
@@ -173,6 +176,13 @@ h1 {
   top: 172px;
   z-index: 15;
   backdrop-filter: blur(14px);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .filter-group {
@@ -300,6 +310,7 @@ h1 {
 
 .card-info {
   padding: 10px;
+  text-align: left;
 }
 
 .card-meta {
@@ -312,7 +323,7 @@ h1 {
 
 .card-number {
   font-size: 10px;
-  color: #475569;
+  color: #e2e8f0;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -444,17 +455,23 @@ h1 {
   }
 
   .filters-bar {
-    flex-wrap: nowrap;
-    gap: 8px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 8px 14px;
     position: sticky;
     top: 0;
+  }
+
+  .filter-row {
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
   }
 
-  .filters-bar::-webkit-scrollbar {
+  .filter-row::-webkit-scrollbar {
     display: none;
   }
 
@@ -477,6 +494,53 @@ h1 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     padding: 14px 14px 32px;
+  }
+
+  .card-meta {
+    flex-wrap: wrap;
+    gap: 0 3px;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+  }
+
+  .card-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+    flex: 0 0 100%;
+    width: 100%;
+    order: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .card-number {
+    font-size: 9px;
+    white-space: nowrap;
+    order: 2;
+  }
+
+  .rarity-badge {
+    font-size: 8px;
+    padding: 1px 3px;
+    white-space: nowrap;
+    order: 3;
+  }
+
+  .card-footer {
+    align-items: center;
+  }
+
+  .count {
+    font-size: 11px;
+    padding: 2px 5px;
+  }
+
+  .price,
+  .value {
+    font-size: 9px;
   }
 
   .stats-row {
@@ -517,7 +581,7 @@ h1 {
 
   .card-name {
     font-size: 12px;
-    min-height: 30px;
+    min-height: 0;
   }
 
   .card-footer {
